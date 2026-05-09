@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gymdex">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<title>Gymdex</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
+:root{
+  --bg0:#0a0a0a;--bg1:#111111;--bg2:#1a1a1a;--bg3:#222222;--bg4:#2a2a2a;
+  --text1:#ffffff;--text2:#aaaaaa;--text3:#666666;
+  --accent:#3d6bff;--accent2:#5580ff;
+  --gold:#f5c542;--danger:#ff4444;--success:#22c55e;
+  --radius:14px;--radius-sm:10px;
+  font-family:'DM Sans',sans-serif;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg0)}
+body{color:var(--text1);display:flex;flex-direction:column;max-width:430px;margin:0 auto;position:relative;height:100dvh}
+h1,h2,h3,.brand{font-family:'Syne',sans-serif}
+
+/* SCREENS */
+.screen{display:none;flex-direction:column;height:calc(100dvh - 90px);overflow-y:auto;overflow-x:hidden;padding:0 0 20px;-webkit-overflow-scrolling:touch}
+.screen.active{display:flex}
+.screen::-webkit-scrollbar{width:0}
+
+/* HEADER */
+.header{padding:env(safe-area-inset-top, 16px) 20px 12px;padding-top:max(env(safe-area-inset-top),16px);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.header-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--text1)}
+.header-btn{width:40px;height:40px;border-radius:50%;background:var(--bg2);border:0.5px solid #333;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);font-size:18px;user-select:none}
+.header-btn:active{opacity:0.7}
+
+/* BOTTOM NAV */
+.bottom-nav{flex-shrink:0;padding:10px 16px;padding-bottom:max(env(safe-area-inset-bottom),16px);background:var(--bg0);border-top:0.5px solid #222;z-index:100}
+.nav-inner{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:var(--bg2);border-radius:18px;padding:6px}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 8px;border-radius:13px;cursor:pointer;transition:all .2s;color:var(--text2);font-size:11px;font-weight:500;background:transparent;border:none;user-select:none}
+.nav-btn .nav-icon{font-size:22px;line-height:1}
+.nav-btn.active{background:var(--bg3);color:var(--accent);border:1.5px solid var(--accent)}
+.nav-btn.active .nav-label{color:var(--accent)}
+.nav-center{background:var(--bg0)!important;border:1.5px solid #333!important;color:var(--accent)!important}
+.nav-center .nav-icon{color:var(--accent);font-size:22px}
+
+/* EMPTY STATE */
+.empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:40px 30px;text-align:center}
+.empty-icon{font-size:64px;opacity:.25}
+.empty-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:600;color:var(--text1)}
+.empty-sub{font-size:14px;color:var(--text3);line-height:1.5}
+
+/* CARDS */
+.card{background:var(--bg2);border-radius:var(--radius);border:0.5px solid #2a2a2a;padding:16px;margin:0 16px 12px}
+.card-row{display:flex;align-items:center;gap:12px}
+.card-icon{width:44px;height:44px;border-radius:12px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.card-info{flex:1;min-width:0}
+.card-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:600;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-sub{font-size:12px;color:var(--text3);line-height:1.4}
+.card-chevron{color:var(--text3);font-size:20px}
+
+/* DIVIDER */
+.divider{height:0.5px;background:#222;margin:4px 16px}
+.section-label{font-size:12px;font-weight:600;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;padding:8px 20px 6px;margin-top:4px}
+
+/* FORM */
+.form-group{margin:0 16px 12px}
+.form-label{font-size:12px;color:var(--text2);margin-bottom:6px;display:block;font-weight:500}
+.form-input{width:100%;background:var(--bg2);border:0.5px solid #333;border-radius:var(--radius-sm);padding:12px 14px;color:var(--text1);font-family:'DM Sans',sans-serif;font-size:16px;outline:none;transition:border-color .2s;appearance:none;-webkit-appearance:none}
+.form-input:focus{border-color:var(--accent)}
+.form-input::placeholder{color:var(--text3)}
+textarea.form-input{resize:none;min-height:80px}
+.form-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:0 16px 12px}
+.form-row .form-group{margin:0}
+
+/* BUTTONS */
+.btn{padding:14px 20px;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s;border:none;display:flex;align-items:center;justify-content:center;gap:8px;user-select:none}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-secondary{background:var(--bg2);color:var(--text1);border:0.5px solid #333}
+.btn-full{width:calc(100% - 32px);margin:0 16px}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg1);border-radius:24px 24px 0 0;width:100%;max-height:92dvh;overflow-y:auto;padding-bottom:max(env(safe-area-inset-bottom),20px);-webkit-overflow-scrolling:touch}
+.modal::-webkit-scrollbar{width:0}
+.modal-header{padding:20px 20px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid #222;position:sticky;top:0;background:var(--bg1);z-index:10}
+.modal-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700}
+.modal-close{width:32px;height:32px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--text2);border:none}
+.modal-create{color:var(--accent);font-size:15px;font-weight:600;cursor:pointer;background:none;border:none;padding:4px}
+
+/* EXERCISE ITEM */
+.ex-item{background:var(--bg3);border-radius:var(--radius-sm);padding:14px;margin:0 16px 8px;position:relative}
+.ex-item-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.ex-delete{background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;padding:0 0 0 8px}
+
+/* PROGRESS CARD */
+.prog-card{background:var(--bg2);border-radius:var(--radius);margin:0 16px 10px;overflow:hidden;border:0.5px solid #2a2a2a}
+.prog-card-top{display:flex;align-items:center;gap:12px;padding:14px}
+.prog-accent{width:4px;background:var(--gold);border-radius:4px;align-self:stretch;flex-shrink:0}
+.prog-info{flex:1}
+.prog-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:600}
+.prog-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 14px 14px}
+.prog-stat{background:var(--bg3);border-radius:8px;padding:8px 12px;text-align:center}
+.prog-stat-label{font-size:11px;color:var(--text3);margin-bottom:4px}
+.prog-stat-val{font-family:'Syne',sans-serif;font-size:18px;font-weight:700}
+.prog-date{font-size:11px;color:var(--text3);text-align:right;padding:0 14px 10px}
+
+/* EMOJI GRID */
+.emoji-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:0 16px;margin-bottom:16px}
+.emoji-btn{background:var(--bg3);border:1.5px solid transparent;border-radius:var(--radius-sm);padding:10px;font-size:22px;cursor:pointer;transition:all .15s;text-align:center}
+.emoji-btn.selected{border-color:var(--accent);background:rgba(61,107,255,.15)}
+
+/* COLOR ROW */
+.color-row{display:flex;gap:10px;padding:0 16px;flex-wrap:wrap;margin-bottom:8px}
+.color-dot{width:30px;height:30px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;transition:all .15s}
+.color-dot.selected{border-color:#fff;transform:scale(1.2)}
+
+/* LOGO GRID */
+.logo-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;padding:0 16px;margin-bottom:12px}
+.logo-btn{background:var(--bg3);border:1.5px solid transparent;border-radius:8px;padding:8px;font-size:20px;cursor:pointer;text-align:center}
+.logo-btn.selected{border-color:var(--accent)}
+
+/* WORKOUT CARD */
+.workout-card{background:var(--bg2);border-radius:var(--radius);border:0.5px solid #2a2a2a;margin:0 16px 10px;padding:16px;cursor:pointer;transition:all .15s;-webkit-user-select:none}
+.workout-card:active{background:var(--bg3)}
+
+/* CHIP */
+.chip{display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;background:var(--bg3);color:var(--text2);cursor:pointer;border:1.5px solid transparent;white-space:nowrap;user-select:none}
+.chip.active{border-color:var(--accent);color:var(--accent);background:rgba(61,107,255,.12)}
+
+/* FILTER ROW */
+.filter-row{display:flex;gap:8px;padding:8px 16px;overflow-x:auto;flex-shrink:0}
+.filter-row::-webkit-scrollbar{height:0}
+
+/* SETTINGS */
+.settings-row{display:flex;align-items:center;gap:12px;padding:14px 20px;cursor:pointer;transition:background .15s}
+.settings-row:active{background:var(--bg2)}
+.settings-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.settings-label{flex:1}
+.settings-label-title{font-size:15px;font-weight:500}
+.settings-label-sub{font-size:12px;color:var(--text3)}
+.toggle{width:44px;height:26px;background:var(--bg4);border-radius:13px;position:relative;cursor:pointer;transition:background .2s;border:none;flex-shrink:0}
+.toggle.on{background:var(--accent)}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s}
+.toggle.on::after{left:21px}
+
+/* PROFILE */
+.profile-card{background:var(--bg2);border-radius:var(--radius);margin:0 16px 16px;padding:20px;display:flex;align-items:center;gap:16px}
+.avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#8b5cf6);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:#fff;flex-shrink:0}
+
+/* EXECUTION SCREEN */
+#exec-screen{display:none;flex-direction:column;position:fixed;inset:0;background:var(--bg0);z-index:300;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#exec-screen.open{display:flex}
+.exec-header{padding:max(env(safe-area-inset-top),20px) 20px 16px;display:flex;align-items:center;gap:12px;border-bottom:0.5px solid #222;flex-shrink:0}
+.back-btn{width:36px;height:36px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:var(--text2);border:none;flex-shrink:0}
+.progress-bar-wrap{height:4px;background:var(--bg3);margin:0 16px 16px;border-radius:4px;flex-shrink:0}
+.progress-bar-fill{height:100%;border-radius:4px;background:var(--accent);transition:width .4s}
+.exec-ex{border-left:3px solid transparent;padding-left:12px;margin:0 16px 14px}
+.exec-ex.done .exec-ex-title{color:var(--text3);text-decoration:line-through}
+.exec-ex-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:4px}
+.exec-ex-sub{font-size:13px;color:var(--text3)}
+
+/* TIMER */
+.timer-ring{width:120px;height:120px;border-radius:50%;background:var(--bg3);border:4px solid var(--accent);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:16px auto;font-family:'Syne',sans-serif;font-size:28px;font-weight:800}
+.timer-label{font-size:11px;color:var(--text3);font-family:'DM Sans',sans-serif;font-weight:400;margin-top:2px}
+
+/* BADGE */
+.executing-badge{background:rgba(34,197,94,.15);color:var(--success);padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:5px}
+.executing-dot{width:7px;height:7px;border-radius:50%;background:var(--success);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ANIMATIONS */
+.fade-in{animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* TOAST */
+.toast{position:fixed;bottom:110px;left:50%;transform:translateX(-50%);background:var(--bg3);color:var(--text1);padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;border:0.5px solid #444;white-space:nowrap}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- TREINOS SCREEN -->
+<div class="screen active" id="screen-treinos">
+  <div class="header">
+    <span class="header-title brand">Treinos</span>
+    <div class="header-btn" onclick="openSettings()">⚙️</div>
+  </div>
+  <div id="treinos-list" style="flex:1"></div>
+</div>
+
+<!-- PROGRESSO SCREEN -->
+<div class="screen" id="screen-progresso">
+  <div class="header">
+    <span class="header-title brand">Progresso</span>
+    <div class="header-btn" onclick="openSettings()">⚙️</div>
+  </div>
+  <div class="card" onclick="openModalProg()" style="cursor:pointer;margin-top:0">
+    <div class="card-row">
+      <div class="card-icon">📈</div>
+      <div class="card-info">
+        <div class="card-title">Criar progresso</div>
+        <div class="card-sub">Registre seu desempenho e acompanhe sua evolução.</div>
+      </div>
+      <span class="card-chevron">›</span>
+    </div>
+  </div>
+  <div class="section-label">Histórico de progressos</div>
+  <div class="filter-row" id="prog-filter-row">
+    <div class="chip active" onclick="filterProg('todos',this)">Todos os exercícios</div>
+  </div>
+  <div id="prog-list" style="flex:1"></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="nav-inner">
+    <button class="nav-btn active" id="nav-treinos" onclick="gotoTab('treinos','nav-treinos')">
+      <span class="nav-icon">💪</span>
+      <span class="nav-label">treinos</span>
+    </button>
+    <button class="nav-btn nav-center" onclick="openModalTreino()">
+      <span class="nav-icon" style="font-size:20px;color:var(--accent)">＋</span>
+      <span class="nav-label" style="color:var(--accent)">novo treino</span>
+    </button>
+    <button class="nav-btn" id="nav-progresso" onclick="gotoTab('progresso','nav-progresso')">
+      <span class="nav-icon">🏃</span>
+      <span class="nav-label">progresso</span>
+    </button>
+  </div>
+</div>
+
+<!-- MODAL NOVO TREINO -->
+<div class="modal-overlay" id="modal-treino">
+  <div class="modal fade-in">
+    <div class="modal-header">
+      <button class="modal-create" onclick="saveTreino()">Criar</button>
+      <span class="modal-title">Novo treino</span>
+      <button class="modal-close" onclick="closeModal('modal-treino')">✕</button>
+    </div>
+    <div class="section-label">Informações do treino</div>
+    <div class="card" style="padding:0">
+      <div class="card-row" style="padding:14px;border-bottom:0.5px solid #222;cursor:pointer" onclick="toggleSection('logo-section')">
+        <div class="card-icon" id="logo-preview-icon" style="background:var(--bg3)">🏋️</div>
+        <div class="card-info"><div class="card-title">Logo</div><div class="card-sub">Selecione um ícone para o treino</div></div>
+        <span class="card-chevron">›</span>
+      </div>
+      <div id="logo-section" style="display:none;padding:12px 0 4px">
+        <div class="logo-grid" id="logo-grid"></div>
+      </div>
+      <div style="padding:14px;border-bottom:0.5px solid #222">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <div class="card-icon" style="background:var(--bg3);font-size:16px;font-weight:700">Tt</div>
+          <div class="card-title">Título</div>
+        </div>
+        <input class="form-input" id="treino-titulo" placeholder="Ex: Treino de Peito" maxlength="20">
+      </div>
+      <div style="padding:14px;border-bottom:0.5px solid #222">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <div class="card-icon" style="background:var(--bg3);font-size:20px">≡</div>
+          <div class="card-title">Descrição</div>
+        </div>
+        <textarea class="form-input" id="treino-desc" placeholder="Ex: Foco em força e hipertrofia" maxlength="300"></textarea>
+      </div>
+      <div style="padding:14px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <div class="card-icon" style="background:var(--bg3);font-size:18px">🎨</div>
+          <div class="card-info"><div class="card-title">Cor principal</div><div class="card-sub">Escolha a cor do seu treino</div></div>
+          <div id="color-preview" style="width:24px;height:24px;border-radius:50%;background:#3d6bff;border:2px solid #444;margin-right:4px"></div>
+        </div>
+        <div class="color-row" id="color-row"></div>
+      </div>
+    </div>
+    <div class="section-label">Exercícios</div>
+    <div id="exercicios-form"></div>
+    <div style="margin:4px 16px 8px">
+      <button class="btn btn-secondary" style="width:100%;color:var(--accent);border-color:rgba(61,107,255,.3)" onclick="addExercicio()">＋ Adicionar exercício</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PROGRESSO -->
+<div class="modal-overlay" id="modal-prog">
+  <div class="modal fade-in">
+    <div class="modal-header">
+      <div style="width:60px"></div>
+      <span class="modal-title">Progresso</span>
+      <button class="modal-close" onclick="closeModal('modal-prog')">✕</button>
+    </div>
+    <div class="card" style="padding:14px;margin-top:8px">
+      <div class="card-row">
+        <div class="card-icon">📈</div>
+        <div class="card-info">
+          <div class="card-title">Criar progresso</div>
+          <div class="card-sub">Registre seu desempenho e acompanhe sua evolução.</div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Exercício</label>
+      <input class="form-input" id="prog-exercicio" placeholder="Ex: Supino reto">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Descrição (opcional)</label>
+      <textarea class="form-input" id="prog-desc" placeholder="Ex: Treino de peito - foco em força"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Repetições</label>
+        <input class="form-input" id="prog-reps" placeholder="10" type="number" inputmode="numeric">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Peso</label>
+        <input class="form-input" id="prog-peso" placeholder="80kg">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Data</label>
+        <input class="form-input" id="prog-data" type="date">
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin:0 16px 12px;flex-wrap:wrap">
+      <div class="chip" id="chip-corporal" onclick="toggleChip('corporal')">👤 Peso corporal</div>
+      <div class="chip" id="chip-externo" onclick="toggleChip('externo')">🏋️ Externo</div>
+    </div>
+    <div class="section-label">Conquista (opcional)</div>
+    <div class="emoji-grid" id="prog-emoji-grid"></div>
+    <div style="margin:0 16px">
+      <button class="btn btn-primary" style="width:100%" onclick="saveProgresso()">＋ Registrar progresso</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="modal-settings" style="align-items:flex-start">
+  <div class="modal" style="border-radius:0 0 24px 24px;max-height:100dvh">
+    <div class="modal-header">
+      <button class="back-btn" onclick="closeModal('modal-settings')">←</button>
+      <span class="modal-title">Configurações</span>
+      <div style="width:36px"></div>
+    </div>
+    <div style="height:16px"></div>
+    <div class="profile-card">
+      <div class="avatar" id="settings-avatar">G</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700" id="settings-name">Usuário</div>
+        <div style="font-size:13px;color:var(--text3)" id="settings-username">@usuario</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:4px;line-height:1.4;overflow:hidden;text-overflow:ellipsis" id="settings-bio">Adicione uma bio</div>
+      </div>
+      <span style="color:var(--text3);font-size:20px;cursor:pointer;flex-shrink:0" onclick="openEditProfile()">›</span>
+    </div>
+    <div class="card" style="padding:0">
+      <div class="settings-row">
+        <div class="settings-icon" style="background:#1a1a2e">🌙</div>
+        <div class="settings-label">
+          <div class="settings-label-title">Tema</div>
+          <div class="settings-label-sub">Modo escuro (padrão)</div>
+        </div>
+      </div>
+      <div class="divider" style="margin:0 16px"></div>
+      <div class="settings-row" onclick="toggleSounds()">
+        <div class="settings-icon" style="background:#1a0a2e">🔊</div>
+        <div class="settings-label">
+          <div class="settings-label-title">Sons</div>
+          <div class="settings-label-sub" id="sounds-label">Sons ativados</div>
+        </div>
+        <button class="toggle on" id="sounds-toggle" onclick="toggleSounds();event.stopPropagation()"></button>
+      </div>
+    </div>
+    <div class="card" style="text-align:center;padding:24px">
+      <div style="font-size:28px;margin-bottom:8px">🏋️</div>
+      <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:4px">Gymdex - 2026</div>
+      <div style="font-size:12px;color:var(--text3)">Todos os direitos reservados.</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px">v1.0.0</div>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT PROFILE MODAL -->
+<div class="modal-overlay" id="modal-profile">
+  <div class="modal fade-in">
+    <div class="modal-header">
+      <button class="modal-create" onclick="saveProfile()">Salvar</button>
+      <span class="modal-title">Editar perfil</span>
+      <button class="modal-close" onclick="closeModal('modal-profile')">✕</button>
+    </div>
+    <div style="height:12px"></div>
+    <div class="form-group">
+      <label class="form-label">Nome</label>
+      <input class="form-input" id="profile-nome" placeholder="Seu nome" maxlength="30">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Username</label>
+      <input class="form-input" id="profile-username" placeholder="@usuario" maxlength="20">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Bio</label>
+      <textarea class="form-input" id="profile-bio" placeholder="Fale um pouco sobre você" maxlength="150"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- EXECUTION SCREEN -->
+<div id="exec-screen">
+  <div class="exec-header">
+    <button class="back-btn" onclick="confirmCloseExec()">←</button>
+    <div style="flex:1;min-width:0">
+      <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="exec-title"></div>
+      <div id="exec-status" style="margin-top:4px"></div>
+    </div>
+    <button class="btn btn-primary" style="padding:8px 16px;font-size:13px" onclick="showFinishModal()">Concluir ✓</button>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="exec-progress-bar" style="width:0%"></div></div>
+  <div id="exec-content" style="flex:1;padding-bottom:40px"></div>
+</div>
+
+<!-- TIMER MODAL -->
+<div class="modal-overlay" id="modal-timer" style="align-items:center">
+  <div style="background:var(--bg2);border-radius:24px;padding:30px;margin:16px;text-align:center;width:calc(100% - 32px)">
+    <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:6px">⏱ Descanso</div>
+    <div class="timer-ring"><span id="timer-val">60</span><span class="timer-label">segundos</span></div>
+    <div style="font-size:13px;color:var(--text3);margin-bottom:20px" id="timer-next-info"></div>
+    <button class="btn btn-secondary" style="width:100%" onclick="skipTimer()">Pular descanso →</button>
+  </div>
+</div>
+
+<!-- FINISH MODAL -->
+<div class="modal-overlay" id="modal-finish" style="align-items:center">
+  <div style="background:var(--bg2);border-radius:24px;padding:30px;margin:16px;text-align:center;width:calc(100% - 32px)">
+    <div style="font-size:56px;margin-bottom:12px">🏆</div>
+    <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;margin-bottom:8px">Treino concluído!</div>
+    <div style="font-size:14px;color:var(--text3);margin-bottom:24px;line-height:1.5">Parabéns pela dedicação!<br>Cada treino conta.</div>
+    <button class="btn btn-primary" style="width:100%;margin-bottom:10px" onclick="finishAndRegister()">Registrar progresso</button>
+    <button class="btn btn-secondary" style="width:100%" onclick="closeExecFully()">Fechar</button>
+  </div>
+</div>
+
+<script>
+const LOGOS=['🏋️','💪','🔥','⚡','🎯','🏆','⚽','🏊','🚴','🤸','🥊','🧘','🏃','⛹️','🤾','🥋','🤼','🏄','🎽','💥'];
+const COLORS=['#3d6bff','#f5c542','#22c55e','#ef4444','#a855f7','#f97316','#06b6d4','#ec4899','#84cc16','#8b5cf6'];
+const PROG_EMOJIS=['🏆','🥈','⭐','🔥','👑','💪','🎯','🏔','😈','🔒'];
+
+let state={
+  treinos:[],progressos:[],
+  settings:{sounds:true},
+  profile:{nome:'',username:'',bio:''},
+  selectedLogo:'🏋️',selectedColor:'#3d6bff',
+  selectedProgEmoji:null,
+  activeFilter:'todos'
+};
+let execSteps=[],currentStep=0,execTreinoIdx=-1;
+let timerInterval=null,timerRemaining=0;
+let exCount=0;
+
+// STORAGE
+function save(){
+  try{localStorage.setItem('gymdex',JSON.stringify({
+    treinos:state.treinos,progressos:state.progressos,
+    settings:state.settings,profile:state.profile
+  }));}catch(e){}
+}
+function load(){
+  try{
+    const d=localStorage.getItem('gymdex');
+    if(d){const s=JSON.parse(d);
+      state.treinos=s.treinos||[];
+      state.progressos=s.progressos||[];
+      state.settings=s.settings||state.settings;
+      state.profile=s.profile||state.profile;
+    }
+  }catch(e){}
+}
+
+// TOAST
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+// TABS
+function gotoTab(tab,navId){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+tab).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(navId).classList.add('active');
+  if(tab==='treinos')renderTreinos();
+  if(tab==='progresso')renderProgressos();
+}
+
+// RENDER TREINOS
+function renderTreinos(){
+  const el=document.getElementById('treinos-list');
+  if(!state.treinos.length){
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon">🤷</div><div class="empty-title">Não tem nada aqui</div><div class="empty-sub">Comece criando um novo treino!</div></div>`;
+    return;
+  }
+  el.innerHTML=state.treinos.map((t,i)=>`
+    <div class="workout-card" onclick="startExec(${i})">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:4px;height:52px;background:${t.color};border-radius:4px;flex-shrink:0"></div>
+        <div style="width:44px;height:44px;background:var(--bg3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${t.logo}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.titulo}</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:2px">${t.exercicios.length} exercício${t.exercicios.length!==1?'s':''}</div>
+          ${t.desc?`<div style="font-size:11px;color:var(--text3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.desc}</div>`:''}
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0">
+          <button onclick="deleteTreino(${i});event.stopPropagation()" style="background:none;border:none;color:var(--text3);font-size:16px;cursor:pointer;padding:2px;line-height:1">✕</button>
+          <span style="font-size:22px;color:var(--text3)">›</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// RENDER PROGRESSOS
+function renderProgressos(){
+  const el=document.getElementById('prog-list');
+  let list=state.progressos;
+  if(state.activeFilter!=='todos')list=list.filter(p=>p.exercicio===state.activeFilter);
+  if(!list.length){
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon">📊</div><div class="empty-title">Nenhum progresso ainda</div><div class="empty-sub">Registre seus PRs e acompanhe sua evolução!</div></div>`;
+  }else{
+    el.innerHTML=list.map((p,i)=>`
+      <div class="prog-card fade-in">
+        <div class="prog-card-top">
+          <div class="prog-accent"></div>
+          <div style="width:44px;height:44px;background:var(--bg3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">${p.emoji||'💪'}</div>
+          <div class="prog-info">
+            <div class="prog-name">${p.exercicio}</div>
+            <div style="font-size:12px;color:var(--text3);margin-top:2px">${p.desc||''}</div>
+          </div>
+          <button onclick="deleteProgresso(${i})" style="background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;padding:4px;flex-shrink:0">✕</button>
+        </div>
+        <div class="prog-meta">
+          <div class="prog-stat"><div class="prog-stat-label">Repetições</div><div class="prog-stat-val">${p.reps||'—'}</div></div>
+          <div class="prog-stat"><div class="prog-stat-label">Peso</div><div class="prog-stat-val">${p.peso||'—'}</div></div>
+        </div>
+        <div class="prog-date">${p.data||''}</div>
+      </div>
+    `).join('');
+  }
+  renderProgFilters();
+}
+
+function renderProgFilters(){
+  const names=[...new Set(state.progressos.map(p=>p.exercicio))];
+  document.getElementById('prog-filter-row').innerHTML=
+    `<div class="chip ${state.activeFilter==='todos'?'active':''}" onclick="filterProg('todos',this)">Todos os exercícios</div>`
+    +names.map(n=>`<div class="chip ${state.activeFilter===n?'active':''}" onclick="filterProg('${n}',this)">${n}</div>`).join('');
+}
+
+function filterProg(val,el){
+  state.activeFilter=val;
+  document.querySelectorAll('#prog-filter-row .chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderProgressos();
+}
+
+// MODAL TREINO
+function openModalTreino(){
+  state.selectedLogo='🏋️';state.selectedColor='#3d6bff';
+  document.getElementById('treino-titulo').value='';
+  document.getElementById('treino-desc').value='';
+  document.getElementById('exercicios-form').innerHTML='';
+  document.getElementById('logo-section').style.display='none';
+  exCount=0;
+  renderLogoGrid();renderColorRow();
+  document.getElementById('modal-treino').classList.add('open');
+  addExercicio();
+}
+
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+function toggleSection(id){
+  const el=document.getElementById(id);
+  el.style.display=el.style.display==='none'?'block':'none';
+}
+
+function renderLogoGrid(){
+  document.getElementById('logo-grid').innerHTML=LOGOS.map(l=>
+    `<div class="logo-btn ${l===state.selectedLogo?'selected':''}" onclick="selectLogo('${l}')">${l}</div>`
+  ).join('');
+  document.getElementById('logo-preview-icon').textContent=state.selectedLogo;
+}
+
+function selectLogo(l){state.selectedLogo=l;renderLogoGrid();}
+
+function renderColorRow(){
+  document.getElementById('color-row').innerHTML=COLORS.map(c=>
+    `<div class="color-dot ${c===state.selectedColor?'selected':''}" style="background:${c}" onclick="selectColor('${c}')"></div>`
+  ).join('');
+  document.getElementById('color-preview').style.background=state.selectedColor;
+}
+
+function selectColor(c){state.selectedColor=c;renderColorRow();}
+
+function renderProgEmojiGrid(){
+  document.getElementById('prog-emoji-grid').innerHTML=PROG_EMOJIS.map(e=>
+    `<div class="emoji-btn ${e===state.selectedProgEmoji?'selected':''}" onclick="selectProgEmoji('${e}')">${e}</div>`
+  ).join('');
+}
+
+function selectProgEmoji(e){
+  state.selectedProgEmoji=state.selectedProgEmoji===e?null:e;
+  renderProgEmojiGrid();
+}
+
+function addExercicio(){
+  const id=exCount++;
+  const el=document.createElement('div');
+  el.className='ex-item fade-in';el.id='ex-'+id;
+  el.innerHTML=`
+    <div class="ex-item-header">
+      <div style="font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.06em">Exercício</div>
+      <button class="ex-delete" onclick="removeEx(${id})">✕</button>
+    </div>
+    <input class="form-input" id="ex-nome-${id}" placeholder="Ex: Supino reto" maxlength="50" style="margin-bottom:8px">
+    <textarea class="form-input" id="ex-desc-${id}" placeholder="Descrição (opcional)" style="min-height:56px;margin-bottom:8px" maxlength="200"></textarea>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:4px">Séries</div>
+        <input class="form-input" id="ex-series-${id}" placeholder="4" type="number" inputmode="numeric" max="9999">
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:4px">Repetições</div>
+        <input class="form-input" id="ex-reps-${id}" placeholder="10 ou 8-12">
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:4px">Descanso</div>
+        <input class="form-input" id="ex-descanso-${id}" placeholder="90s">
+      </div>
+    </div>
+  `;
+  document.getElementById('exercicios-form').appendChild(el);
+}
+
+function removeEx(id){document.getElementById('ex-'+id)?.remove();}
+
+function saveTreino(){
+  const titulo=document.getElementById('treino-titulo').value.trim();
+  if(!titulo){toast('⚠️ Digite o título do treino!');return;}
+  const exercicios=[];
+  document.querySelectorAll('[id^="ex-nome-"]').forEach(inp=>{
+    const id=inp.id.replace('ex-nome-','');
+    const nome=inp.value.trim();
+    if(nome){
+      exercicios.push({
+        nome,
+        desc:document.getElementById('ex-desc-'+id)?.value.trim()||'',
+        series:document.getElementById('ex-series-'+id)?.value||'3',
+        reps:document.getElementById('ex-reps-'+id)?.value||'',
+        descanso:document.getElementById('ex-descanso-'+id)?.value||'60s'
+      });
+    }
+  });
+  state.treinos.push({titulo,desc:document.getElementById('treino-desc').value.trim(),logo:state.selectedLogo,color:state.selectedColor,exercicios,criadoEm:new Date().toLocaleDateString('pt-BR')});
+  save();closeModal('modal-treino');renderTreinos();
+  toast('✅ Treino criado!');
+}
+
+function deleteTreino(i){
+  state.treinos.splice(i,1);save();renderTreinos();toast('🗑 Treino removido');
+}
+
+// MODAL PROGRESSO
+function openModalProg(){
+  state.selectedProgEmoji=null;
+  ['prog-exercicio','prog-desc','prog-reps','prog-peso'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('prog-data').value=new Date().toISOString().split('T')[0];
+  document.getElementById('chip-corporal').classList.remove('active');
+  document.getElementById('chip-externo').classList.remove('active');
+  renderProgEmojiGrid();
+  document.getElementById('modal-prog').classList.add('open');
+}
+
+function toggleChip(t){document.getElementById('chip-'+t).classList.toggle('active');}
+
+function saveProgresso(){
+  const exercicio=document.getElementById('prog-exercicio').value.trim();
+  if(!exercicio){toast('⚠️ Digite o nome do exercício!');return;}
+  const dataVal=document.getElementById('prog-data').value;
+  const dataFmt=dataVal?new Date(dataVal+'T12:00').toLocaleDateString('pt-BR'):new Date().toLocaleDateString('pt-BR');
+  state.progressos.unshift({
+    exercicio,
+    desc:document.getElementById('prog-desc').value.trim(),
+    reps:document.getElementById('prog-reps').value,
+    peso:document.getElementById('prog-peso').value,
+    data:dataFmt,
+    emoji:state.selectedProgEmoji||'💪',
+    pesoCorporal:document.getElementById('chip-corporal').classList.contains('active'),
+    pesoExterno:document.getElementById('chip-externo').classList.contains('active')
+  });
+  save();closeModal('modal-prog');
+  gotoTab('progresso','nav-progresso');
+  toast('🏆 Progresso registrado!');
+}
+
+function deleteProgresso(i){
+  state.progressos.splice(i,1);save();renderProgressos();toast('🗑 Removido');
+}
+
+// SETTINGS
+function openSettings(){
+  const p=state.profile;
+  document.getElementById('settings-name').textContent=p.nome||'Usuário';
+  document.getElementById('settings-username').textContent='@'+(p.username||'usuario');
+  document.getElementById('settings-bio').textContent=p.bio||'Adicione uma bio';
+  const init=(p.nome||'G').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('settings-avatar').textContent=init;
+  document.getElementById('sounds-toggle').className='toggle '+(state.settings.sounds?'on':'');
+  document.getElementById('sounds-label').textContent=state.settings.sounds?'Sons ativados':'Sons desativados';
+  document.getElementById('modal-settings').classList.add('open');
+}
+
+function toggleSounds(){
+  state.settings.sounds=!state.settings.sounds;
+  document.getElementById('sounds-toggle').className='toggle '+(state.settings.sounds?'on':'');
+  document.getElementById('sounds-label').textContent=state.settings.sounds?'Sons ativados':'Sons desativados';
+  save();
+}
+
+function openEditProfile(){
+  document.getElementById('profile-nome').value=state.profile.nome||'';
+  document.getElementById('profile-username').value=state.profile.username||'';
+  document.getElementById('profile-bio').value=state.profile.bio||'';
+  document.getElementById('modal-profile').classList.add('open');
+}
+
+function saveProfile(){
+  state.profile.nome=document.getElementById('profile-nome').value.trim()||'Usuário';
+  state.profile.username=document.getElementById('profile-username').value.trim().replace('@','')||'usuario';
+  state.profile.bio=document.getElementById('profile-bio').value.trim();
+  save();closeModal('modal-profile');openSettings();toast('✅ Perfil salvo!');
+}
+
+// EXECUTION
+function startExec(idx){
+  const t=state.treinos[idx];
+  if(!t.exercicios.length){toast('⚠️ Adicione exercícios primeiro!');return;}
+  execTreinoIdx=idx;
+  execSteps=[];
+  t.exercicios.forEach(ex=>{
+    const s=parseInt(ex.series)||1;
+    for(let i=1;i<=s;i++) execSteps.push({...ex,serieAtual:i,totalSeries:s});
+  });
+  currentStep=0;
+  document.getElementById('exec-title').textContent=t.titulo;
+  document.getElementById('exec-screen').classList.add('open');
+  renderExecStep();
+}
+
+function renderExecStep(){
+  const pct=execSteps.length>1?(currentStep/(execSteps.length-1))*100:0;
+  document.getElementById('exec-progress-bar').style.width=pct+'%';
+  document.getElementById('exec-status').innerHTML=`<span class="executing-badge"><span class="executing-dot"></span>${currentStep+1} de ${execSteps.length}</span>`;
+  document.getElementById('exec-content').innerHTML=execSteps.map((s,i)=>{
+    const done=i<currentStep,active=i===currentStep;
+    return `<div class="exec-ex ${done?'done':''}" style="border-left-color:${active?'var(--accent)':'transparent'}">
+      <div class="exec-ex-title">${s.nome}</div>
+      <div class="exec-ex-sub">${s.totalSeries>1?`Série ${s.serieAtual}/${s.totalSeries} · `:''}${s.reps?s.reps+' reps':''}${s.descanso?' · '+s.descanso+' descanso':''}</div>
+      ${active?`<button class="btn btn-primary" style="margin-top:12px;padding:10px 20px;font-size:14px" onclick="finishStep()">Terminei ✓</button>`:''}
+      ${done?`<span style="font-size:12px;color:var(--success);margin-top:4px;display:block">✓ Concluído</span>`:''}
+    </div>`;
+  }).join('');
+}
+
+function finishStep(){
+  if(currentStep>=execSteps.length-1){showFinishModal();return;}
+  const s=execSteps[currentStep];
+  const sec=parseDescanso(s.descanso);
+  if(sec>0){startTimer(sec);}
+  else{currentStep++;renderExecStep();}
+}
+
+function parseDescanso(s){
+  if(!s)return 60;
+  const m=s.match(/(\d+)\s*min/i);if(m)return parseInt(m[1])*60;
+  const sec=s.match(/(\d+)\s*s/i);if(sec)return parseInt(sec[1]);
+  const n=parseInt(s);return isNaN(n)?60:n;
+}
+
+function startTimer(seconds){
+  timerRemaining=seconds;
+  document.getElementById('timer-val').textContent=seconds;
+  const next=execSteps[currentStep+1];
+  document.getElementById('timer-next-info').textContent=next?`Próximo: ${next.nome}`:'Último exercício!';
+  document.getElementById('modal-timer').classList.add('open');
+  if(timerInterval)clearInterval(timerInterval);
+  timerInterval=setInterval(()=>{
+    timerRemaining--;
+    document.getElementById('timer-val').textContent=timerRemaining;
+    if(timerRemaining<=0){
+      clearInterval(timerInterval);
+      closeModal('modal-timer');
+      currentStep++;renderExecStep();
+    }
+  },1000);
+}
+
+function skipTimer(){
+  if(timerInterval)clearInterval(timerInterval);
+  closeModal('modal-timer');currentStep++;renderExecStep();
+}
+
+function showFinishModal(){document.getElementById('modal-finish').classList.add('open');}
+
+function finishAndRegister(){
+  closeModal('modal-finish');
+  document.getElementById('exec-screen').classList.remove('open');
+  openModalProg();
+}
+
+function closeExecFully(){
+  closeModal('modal-finish');
+  if(timerInterval)clearInterval(timerInterval);
+  closeModal('modal-timer');
+  document.getElementById('exec-screen').classList.remove('open');
+}
+
+function confirmCloseExec(){
+  if(confirm('Sair do treino em andamento?'))closeExecFully();
+}
+
+// INIT
+load();
+renderTreinos();
+// Set today's date default
+document.getElementById('prog-data').value=new Date().toISOString().split('T')[0];
+
+// Register service worker
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>

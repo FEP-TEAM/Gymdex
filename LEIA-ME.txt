@@ -1,0 +1,45 @@
+# Gymdex 🏋️
+
+App de treinos e progressos personalizados — PWA (Progressive Web App).
+
+## Como instalar no celular
+
+### Android (Chrome)
+1. Abra o arquivo `index.html` em um servidor local ou hospede online
+2. Acesse pelo Chrome
+3. Toque nos 3 pontinhos (⋮) no canto superior direito
+4. Selecione **"Adicionar à tela inicial"** ou **"Instalar aplicativo"**
+5. Confirme — o ícone aparecerá na sua tela inicial 🎉
+
+### iPhone/iPad (Safari)
+1. Acesse pelo Safari
+2. Toque no ícone de **compartilhar** (□↑)
+3. Role e selecione **"Adicionar à Tela de Início"**
+4. Confirme — o ícone aparecerá na tela inicial 🎉
+
+## Como hospedar gratuitamente (para ter um link)
+
+### Opção 1 — Netlify Drop (mais fácil, sem conta)
+1. Acesse https://app.netlify.com/drop
+2. Arraste a pasta `gymdex` inteira para a página
+3. Pronto! Você receberá um link como `https://xxx.netlify.app`
+
+### Opção 2 — GitHub Pages
+1. Crie uma conta em github.com
+2. Crie um repositório novo
+3. Faça upload dos arquivos
+4. Ative GitHub Pages em Settings → Pages
+
+## Arquivos
+- `index.html` — App completo
+- `manifest.json` — Configuração PWA
+- `sw.js` — Service Worker (funciona offline)
+
+## Funcionalidades
+- ✅ Criar treinos personalizados (logo, cor, exercícios, séries, reps, descanso)
+- ✅ Executar treino com timer de descanso automático
+- ✅ Registrar progressos/PRs com emoji, peso e data
+- ✅ Filtrar histórico por exercício
+- ✅ Perfil local (nome, bio, username)
+- ✅ Funciona 100% offline
+- ✅ Dados salvos no próprio celular (localStorage)

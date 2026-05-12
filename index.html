@@ -23,7 +23,7 @@ body.light{
   --t1:#000;--t2:#555;--t3:#999;--bd:#e0e0e0;
 }
 html,body{height:100%;overflow:hidden;background:var(--bg0);color:var(--t1);font-family:'DM Sans',sans-serif}
-body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;height:100dvh}
+body{display:flex;flex-direction:column;max-width:430px;margin:0 auto;height:100dvh;overscroll-behavior-y:none}
 
 /* ── SCREENS ── */
 .screen{display:none;flex-direction:column;height:calc(100dvh - 88px);overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:24px}
@@ -596,7 +596,7 @@ function addExercicio() {
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
       <div><div class="flabel">Séries</div><input class="field" id="exs-${id}" placeholder="4" type="number" inputmode="numeric" min="1" max="20"></div>
       <div><div class="flabel">Reps</div><input class="field" id="exr-${id}" placeholder="10"></div>
-      <div><div class="flabel">Descanso</div><input class="field" id="exdt-${id}" placeholder="90" type="number" inputmode="numeric" min="0" max="300"></div>
+      <div><div class="flabel">Descanso</div><input class="field" id="exdt-${id}" placeholder="90s"></div>
     </div>`;
   document.getElementById('exercicios-form').appendChild(el);
 }
@@ -840,6 +840,7 @@ renderTreinos();
 document.getElementById('prog-data').value = new Date().toISOString().split('T')[0];
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
+<script src="auth.js"></script>
 <script src="gymdex-db.js"></script>
 </body>
 </html>

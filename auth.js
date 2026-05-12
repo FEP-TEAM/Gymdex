@@ -4,7 +4,7 @@
    ═══════════════════════════════════════════════════════ */
 
 const SUPA_URL  = 'https://eeziykwrefpzxajmykxy.supabase.co';
-const SUPA_KEY  = 'COLOQUE_SUA_ANON_KEY_AQUI';
+const SUPA_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVleml5a3dyZWZwenhham15a3h5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1MzMzODksImV4cCI6MjA5NDEwOTM4OX0.qX9DsRTj6-HZxJb4UouP-NqLUce3jyhTYzfC-GXifmk';
 
 /* ── Device ID único e permanente ── */
 function getDeviceId() {

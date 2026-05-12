@@ -4,7 +4,7 @@
    ═══════════════════════════════════════════════════════ */
 
 const SUPA_URL  = 'https://eeziykwrefpzxajmykxy.supabase.co';
-const SUPA_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVleml5a3dyZWZwenhham15a3h5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1MzMzODksImV4cCI6MjA5NDEwOTM4OX0.qX9DsRTj6-HZxJb4UouP-NqLUce3jyhTYzfC-GXifmk';
+const SUPA_KEY  = 'COLOQUE_SUA_ANON_KEY_AQUI';
 
 /* ── Device ID único e permanente ── */
 function getDeviceId() {
@@ -66,13 +66,13 @@ async function refreshSession() {
 }
 
 /* ── Verifica device binding ── */
-async function checkDevice(userId) {
+async function checkDevice(userId, userToken) {
   const did = getDeviceId();
 
   // Busca o device registrado para esse usuário
   const r = await sbFetch(
     `/rest/v1/devices?user_id=eq.${userId}&select=device_id`,
-    { method: 'GET' }
+    { method: 'GET', headers: { 'Authorization': 'Bearer ' + userToken } }
   );
 
   if (!r.ok) return { allowed: false, reason: 'Erro ao verificar dispositivo.' };
@@ -116,7 +116,7 @@ async function doLogin(email, password) {
   const { access_token, refresh_token, user } = r.data;
 
   // Verifica device binding
-  const dev = await checkDevice(user.id);
+  const dev = await checkDevice(user.id, access_token);
   if (!dev.allowed) {
     // Faz logout imediato no Supabase
     await sbFetch('/auth/v1/logout', {
@@ -332,7 +332,7 @@ CREATE POLICY "user_own_device" ON devices
     const valid = await refreshSession();
     if (valid) {
       // Verifica device mesmo com sessão existente
-      const dev = await checkDevice(AUTH.user.id);
+      const dev = await checkDevice(AUTH.user.id, AUTH.token);
       if (dev.allowed) {
         injectUserMenu();
         return; // app já inicializado pelo index.html

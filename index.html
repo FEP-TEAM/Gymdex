@@ -596,7 +596,7 @@ function addExercicio() {
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
       <div><div class="flabel">Séries</div><input class="field" id="exs-${id}" placeholder="4" type="number" inputmode="numeric" min="1" max="20"></div>
       <div><div class="flabel">Reps</div><input class="field" id="exr-${id}" placeholder="10"></div>
-      <div><div class="flabel">Descanso</div><input class="field" id="exdt-${id}" placeholder="90s"></div>
+      <div><div class="flabel">Descanso</div><input class="field" id="exdt-${id}" placeholder="90" type="number" inputmode="numeric" min="0" max="300">
     </div>`;
   document.getElementById('exercicios-form').appendChild(el);
 }

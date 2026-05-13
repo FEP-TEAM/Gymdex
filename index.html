@@ -846,6 +846,16 @@ function confirmCloseExec() {
 }
 
 /* ══ INIT ══ */
+  async function forceUpdate() {
+  if (!confirm('Buscar atualização agora?')) return;
+  if ('serviceWorker' in navigator) {
+    const regs = await navigator.serviceWorker.getRegistrations();
+    for (const reg of regs) await reg.unregister();
+    const keys = await caches.keys();
+    for (const key of keys) await caches.delete(key);
+  }
+  window.location.reload(true);
+  }
 load();
 applyTheme();
 renderTreinos();

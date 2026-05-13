@@ -596,7 +596,7 @@ function addExercicio() {
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
       <div><div class="flabel">Séries</div><input class="field" id="exs-${id}" placeholder="4" type="number" inputmode="numeric" min="1" max="20"></div>
       <div><div class="flabel">Reps</div><input class="field" id="exr-${id}" placeholder="10"></div>
-      <div><div class="flabel">Descanso</div><input class="field" id="exdt-${id}" placeholder="90s"></div>
+      <div><div class="flabel">Descanso</div><input class="field" id="exdt-${id}" placeholder="90" type="number" inputmode="numeric" min="1" max="300" autocomplete="off"></div>
     </div>`;
   document.getElementById('exercicios-form').appendChild(el);
 }
@@ -730,10 +730,12 @@ function renderExec() {
       <div class="exc ${isDone ? 'done' : ''} ${isActive ? 'active' : ''}">
         <div class="exc-name">${ex.nome}</div>
         <div class="exc-meta">
-          <span>📋 ${total}×</span>
-          ${ex.reps     ? `<span>🔁 ${ex.reps}</span>`     : ''}
-          ${ex.descanso ? `<span>⏱ ${ex.descanso}</span>` : ''}
-        </div>
+          <div class="exc-meta">
+  <span>📋 ${total}×</span>
+  ${ex.reps     ? `<span>🔁 ${ex.reps}</span>`     : ''}
+  ${ex.descanso ? `<span>⏱ ${ex.descanso}</span>` : ''}
+</div>
+${ex.desc ? `<div style="font-size:12px;color:var(--t2);margin-bottom:10px">${ex.desc}</div>` : ''}
         <div class="dots">${dots}</div>
         ${isActive ? `<button class="next-btn" onclick="nextSerie()">Série ${done + 1} concluída →</button>` : ''}
         ${isDone && !isActive ? `<div style="font-size:13px;color:var(--ok)">✓ Concluído</div>` : ''}

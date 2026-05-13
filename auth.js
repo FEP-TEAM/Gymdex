@@ -328,7 +328,11 @@ CREATE POLICY "user_own_device" ON devices
 
   // Tenta usar sessão existente
   if (AUTH.token && AUTH.user) {
-    // Tenta refresh para garantir token válido
+    // Se estiver offline, usa sessão salva direto sem validar
+    if (!navigator.onLine) {
+      injectUserMenu();
+      return;
+    }
     const valid = await refreshSession();
     if (valid) {
       // Verifica device mesmo com sessão existente

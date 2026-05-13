@@ -848,12 +848,22 @@ function confirmCloseExec() {
 /* ══ INIT ══ */
   async function forceUpdate() {
   if (!confirm('Buscar atualização agora?')) return;
+  // Salva o token antes de limpar
+  const token   = localStorage.getItem('gx_token');
+  const refresh = localStorage.getItem('gx_refresh');
+  const user    = localStorage.getItem('gx_user');
+  const did     = localStorage.getItem('gx_did');
   if ('serviceWorker' in navigator) {
     const regs = await navigator.serviceWorker.getRegistrations();
     for (const reg of regs) await reg.unregister();
     const keys = await caches.keys();
     for (const key of keys) await caches.delete(key);
   }
+  // Restaura o token depois de limpar
+  if (token)   localStorage.setItem('gx_token',   token);
+  if (refresh) localStorage.setItem('gx_refresh', refresh);
+  if (user)    localStorage.setItem('gx_user',    user);
+  if (did)     localStorage.setItem('gx_did',     did);
   window.location.reload(true);
   }
 load();

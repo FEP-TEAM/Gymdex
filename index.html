@@ -329,17 +329,6 @@ textarea.field{resize:none;min-height:72px}
         <button class="toggle on" id="theme-toggle" onclick="event.stopPropagation();toggleTheme()"></button>
       </div>
     </div>
-      <div class="card" style="padding:0">
-  <div class="srow" onclick="forceUpdate()">
-    <div class="sico" style="background:#1a2e1a">🔄</div>
-    <div class="slbl">
-      <div class="slbl-title">Buscar atualização</div>
-      <div class="slbl-sub">Limpa o cache e recarrega o app</div>
-    </div>
-  </div>
-      </div>
-</div>
-    </div>
     <div class="card" style="text-align:center;padding:22px">
       <div style="font-size:28px;margin-bottom:8px">🏋️</div>
       <div style="font:700 14px/1 'Syne',sans-serif">Gymdex v2.1</div>
@@ -607,7 +596,7 @@ function addExercicio() {
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
       <div><div class="flabel">Séries</div><input class="field" id="exs-${id}" placeholder="4" type="number" inputmode="numeric" min="1" max="20"></div>
       <div><div class="flabel">Reps</div><input class="field" id="exr-${id}" placeholder="10"></div>
-      <div><div class="flabel">Descanso</div><input class="field" id="exdt-${id}" placeholder="90" type="number" inputmode="numeric" min="1" max="300" autocomplete="off"></div>
+      <div><div class="flabel">Descanso</div><input class="field" id="exdt-${id}" placeholder="90s"></div>
     </div>`;
   document.getElementById('exercicios-form').appendChild(el);
 }
@@ -745,7 +734,6 @@ function renderExec() {
           ${ex.reps     ? `<span>🔁 ${ex.reps}</span>`     : ''}
           ${ex.descanso ? `<span>⏱ ${ex.descanso}</span>` : ''}
         </div>
-        ${ex.desc ? `<div style="font-size:12px;color:var(--t2);margin-bottom:10px">${ex.desc}</div>` : ''}
         <div class="dots">${dots}</div>
         ${isActive ? `<button class="next-btn" onclick="nextSerie()">Série ${done + 1} concluída →</button>` : ''}
         ${isDone && !isActive ? `<div style="font-size:13px;color:var(--ok)">✓ Concluído</div>` : ''}
@@ -846,26 +834,6 @@ function confirmCloseExec() {
 }
 
 /* ══ INIT ══ */
-  async function forceUpdate() {
-  if (!confirm('Buscar atualização agora?')) return;
-  // Salva o token antes de limpar
-  const token   = localStorage.getItem('gx_token');
-  const refresh = localStorage.getItem('gx_refresh');
-  const user    = localStorage.getItem('gx_user');
-  const did     = localStorage.getItem('gx_did');
-  if ('serviceWorker' in navigator) {
-    const regs = await navigator.serviceWorker.getRegistrations();
-    for (const reg of regs) await reg.unregister();
-    const keys = await caches.keys();
-    for (const key of keys) await caches.delete(key);
-  }
-  // Restaura o token depois de limpar
-  if (token)   localStorage.setItem('gx_token',   token);
-  if (refresh) localStorage.setItem('gx_refresh', refresh);
-  if (user)    localStorage.setItem('gx_user',    user);
-  if (did)     localStorage.setItem('gx_did',     did);
-  window.location.reload(true);
-  }
 load();
 applyTheme();
 renderTreinos();
